@@ -1,3 +1,6 @@
+!.gitignore
+.*
+
 LICENSE
 
 # Byte-compiled / optimized / DLL files
