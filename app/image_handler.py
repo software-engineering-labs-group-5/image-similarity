@@ -39,7 +39,7 @@ class ImageHandler:
         if self.metrics_engine is not None:
             self.metrics_engine.calculate_metrics(self.reference_image, self.modified_image)
         else:
-            raise Exception("regenerate_view", "metrics_engine is not set")
+            raise Exception("trigger_metrics_calculation", "metrics_engine is not set")
 
 
 
