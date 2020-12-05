@@ -1,6 +1,25 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QImage, QPixmap
+import sys
+
 
 class Ui_MainWindow(object):
+    def __init__(self):
+        self.image_handler = None
+        self.modifications_provider = None
+
+    def subscribe_image_handler(self, image_handler):
+        self.image_handler = image_handler
+
+    def subscribe_modifications_provider(self, modifications_provider):
+        self.modifications_provider = modifications_provider
+
+    def display_ref_image(self, image: QImage):
+        self.InputImage.setPixmap(QtGui.QPixmap(image))
+
+    def display_mod_image(self, image: QImage):
+        self.MeasuredImage.setPixmap(QtGui.QPixmap(image))
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1400, 820)
@@ -47,11 +66,17 @@ class Ui_MainWindow(object):
         self.BrightnessSlider.setGeometry(QtCore.QRect(100, 580, 1200, 25))
         self.BrightnessSlider.setOrientation(QtCore.Qt.Horizontal)
         self.BrightnessSlider.setObjectName("BrightnessSlider")
+        self.BrightnessSlider.setMinimum(-100)
+        self.BrightnessSlider.setMaximum(100)
+        self.BrightnessSlider.valueChanged.connect(self.update_brightness)
 
         self.NoiseSlider = QtWidgets.QSlider(self.centralwidget)
         self.NoiseSlider.setGeometry(QtCore.QRect(100, 650, 1200, 25))
         self.NoiseSlider.setOrientation(QtCore.Qt.Horizontal)
         self.NoiseSlider.setObjectName("NoiseSlider")
+        self.NoiseSlider.setMinimum(0)
+        self.NoiseSlider.setMaximum(100)
+        self.NoiseSlider.valueChanged.connect(self.update_noise)
 
         self.BrightnessLabel = QtWidgets.QLabel(self.centralwidget)
         self.BrightnessLabel.setEnabled(True)
@@ -73,6 +98,9 @@ class Ui_MainWindow(object):
         self.ContrastSlider.setGeometry(QtCore.QRect(100, 720, 1200, 25))
         self.ContrastSlider.setOrientation(QtCore.Qt.Horizontal)
         self.ContrastSlider.setObjectName("ContrastSlider")
+        self.ContrastSlider.setMinimum(-100)
+        self.ContrastSlider.setMaximum(100)
+        self.ContrastSlider.valueChanged.connect(self.update_contrast)
 
         self.ContrastLabel = QtWidgets.QLabel(self.centralwidget)
         self.ContrastLabel.setEnabled(True)
@@ -106,7 +134,6 @@ class Ui_MainWindow(object):
         self.actionExit.triggered.connect(self.closeProgram)
         self.actionOpen_image.triggered.connect(self.loadImage)
 
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Image Similarity"))
@@ -125,21 +152,48 @@ class Ui_MainWindow(object):
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionExit.setStatusTip(_translate("MainWindow", "Exit from the program"))
         self.actionExit.setShortcut(_translate("MainWindow", "Ctrl+W"))
-    
+
     def closeProgram(self):
         app.quit()
-    
+
     def loadImage(self):
-        path_to_project, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Choose image","", "Image Files (*.png *.jpg *.bmp)")
-        if path_to_project!='':
-            pixmap = QtGui.QPixmap(path_to_project)
-            self.InputImage.setPixmap(pixmap)
-            self.InputImage.setAlignment(QtCore.Qt.AlignLeft)
-            self.MeasuredImage.setPixmap(pixmap)
-            self.MeasuredImage.setAlignment(QtCore.Qt.AlignLeft)
+        if self.image_handler is None:
+            raise Exception("loadImage", "image_handler not set")
+        elif self.modifications_provider is None:
+            raise Exception("loadImage", "modifications_provider not set")
+        path_to_image, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Choose image", "",
+                                                                 "Image Files (*.png *.jpg *.bmp)")
+        if path_to_image != '':
+            self.ContrastSlider.setSliderPosition(0)
+            self.BrightnessSlider.setSliderPosition(0)
+            self.NoiseSlider.setSliderPosition(0)
+            self.modifications_provider.reset_changes()
+            self.image_handler.load_image_from_file(path_to_image)
+            self.image_handler.regenerate_view()
+
+    def update_brightness(self, value: float):
+        if self.image_handler.modified_image is not None:
+            self.modifications_provider.add_change({'name': 'brightness', 'value': float(value)})
+            self.modifications_provider.apply_changes()
+            self.MeasuredImage.setPixmap(
+                QPixmap(self.image_handler.convert_matrix_to_qimage(self.image_handler.modified_image)))
+
+    def update_contrast(self, value: float):
+        if self.image_handler.modified_image is not None:
+            self.modifications_provider.add_change({'name': 'contrast', 'value': float(value)})
+            self.modifications_provider.apply_changes()
+            self.MeasuredImage.setPixmap(
+                QPixmap(self.image_handler.convert_matrix_to_qimage(self.image_handler.modified_image)))
+
+    def update_noise(self, value: float):
+        if self.image_handler.modified_image is not None:
+            self.modifications_provider.add_change({'name': 'noise', 'value': float(value)})
+            self.modifications_provider.apply_changes()
+            self.MeasuredImage.setPixmap(
+                QPixmap(self.image_handler.convert_matrix_to_qimage(self.image_handler.modified_image)))
+
 
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
