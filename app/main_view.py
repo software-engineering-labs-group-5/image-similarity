@@ -5,14 +5,10 @@ import sys
 
 class Ui_MainWindow(object):
     def __init__(self):
-        self.image_handler = None
-        self.modifications_provider = None
+        self.controls = None
 
-    def subscribe_image_handler(self, image_handler):
-        self.image_handler = image_handler
-
-    def subscribe_modifications_provider(self, modifications_provider):
-        self.modifications_provider = modifications_provider
+    def subscribe_controls(self, controls):
+        self.controls = controls
 
     def display_ref_image(self, image: QImage):
         self.InputImage.setPixmap(QtGui.QPixmap(image))
@@ -66,17 +62,17 @@ class Ui_MainWindow(object):
         self.BrightnessSlider.setGeometry(QtCore.QRect(100, 580, 1200, 25))
         self.BrightnessSlider.setOrientation(QtCore.Qt.Horizontal)
         self.BrightnessSlider.setObjectName("BrightnessSlider")
-        self.BrightnessSlider.setMinimum(-100)
-        self.BrightnessSlider.setMaximum(100)
-        self.BrightnessSlider.valueChanged.connect(self.update_brightness)
+        self.BrightnessSlider.setMinimum(self.controls.brightness_min)
+        self.BrightnessSlider.setMaximum(self.controls.brightness_max)
+        self.BrightnessSlider.valueChanged.connect(self.controls.update_brightness)
 
         self.NoiseSlider = QtWidgets.QSlider(self.centralwidget)
         self.NoiseSlider.setGeometry(QtCore.QRect(100, 650, 1200, 25))
         self.NoiseSlider.setOrientation(QtCore.Qt.Horizontal)
         self.NoiseSlider.setObjectName("NoiseSlider")
-        self.NoiseSlider.setMinimum(0)
-        self.NoiseSlider.setMaximum(100)
-        self.NoiseSlider.valueChanged.connect(self.update_noise)
+        self.NoiseSlider.setMinimum(self.controls.noise_min)
+        self.NoiseSlider.setMaximum(self.controls.noise_max)
+        self.NoiseSlider.valueChanged.connect(self.controls.update_noise)
 
         self.BrightnessLabel = QtWidgets.QLabel(self.centralwidget)
         self.BrightnessLabel.setEnabled(True)
@@ -98,9 +94,9 @@ class Ui_MainWindow(object):
         self.ContrastSlider.setGeometry(QtCore.QRect(100, 720, 1200, 25))
         self.ContrastSlider.setOrientation(QtCore.Qt.Horizontal)
         self.ContrastSlider.setObjectName("ContrastSlider")
-        self.ContrastSlider.setMinimum(-100)
-        self.ContrastSlider.setMaximum(100)
-        self.ContrastSlider.valueChanged.connect(self.update_contrast)
+        self.ContrastSlider.setMinimum(self.controls.contrast_min)
+        self.ContrastSlider.setMaximum(self.controls.contrast_max)
+        self.ContrastSlider.valueChanged.connect(self.controls.update_contrast)
 
         self.ContrastLabel = QtWidgets.QLabel(self.centralwidget)
         self.ContrastLabel.setEnabled(True)
@@ -132,7 +128,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.actionExit.triggered.connect(self.closeProgram)
-        self.actionOpen_image.triggered.connect(self.loadImage)
+        self.actionOpen_image.triggered.connect(self.controls.loadImage)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -142,9 +138,9 @@ class Ui_MainWindow(object):
         self.SSIMLabel.setText(_translate("MainWindow", "SSIM: "))
         self.FSIMLabel.setText(_translate("MainWindow", "FSIM: "))
         self.CalculateMetricsButton.setText(_translate("MainWindow", "Calculate metrics"))
-        self.BrightnessLabel.setText(_translate("MainWindow", "Brightness"))
-        self.NoiseLabel.setText(_translate("MainWindow", "Noise"))
-        self.ContrastLabel.setText(_translate("MainWindow", "Contrast"))
+        self.BrightnessLabel.setText(_translate("MainWindow", self.controls.brightness_name))
+        self.NoiseLabel.setText(_translate("MainWindow", self.controls.noise_name))
+        self.ContrastLabel.setText(_translate("MainWindow", self.controls.contrast_name))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionOpen_image.setText(_translate("MainWindow", "Open image"))
         self.actionOpen_image.setStatusTip(_translate("MainWindow", "Open an image from your computer"))
@@ -155,42 +151,6 @@ class Ui_MainWindow(object):
 
     def closeProgram(self):
         app.quit()
-
-    def loadImage(self):
-        if self.image_handler is None:
-            raise Exception("loadImage", "image_handler not set")
-        elif self.modifications_provider is None:
-            raise Exception("loadImage", "modifications_provider not set")
-        path_to_image, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Choose image", "",
-                                                                 "Image Files (*.png *.jpg *.bmp)")
-        if path_to_image != '':
-            self.ContrastSlider.setSliderPosition(0)
-            self.BrightnessSlider.setSliderPosition(0)
-            self.NoiseSlider.setSliderPosition(0)
-            self.modifications_provider.reset_changes()
-            self.image_handler.load_image_from_file(path_to_image)
-            self.image_handler.regenerate_view()
-
-    def update_brightness(self, value: float):
-        if self.image_handler.modified_image is not None:
-            self.modifications_provider.add_change({'name': 'brightness', 'value': float(value)})
-            self.modifications_provider.apply_changes()
-            self.MeasuredImage.setPixmap(
-                QPixmap(self.image_handler.convert_matrix_to_qimage(self.image_handler.modified_image)))
-
-    def update_contrast(self, value: float):
-        if self.image_handler.modified_image is not None:
-            self.modifications_provider.add_change({'name': 'contrast', 'value': float(value)})
-            self.modifications_provider.apply_changes()
-            self.MeasuredImage.setPixmap(
-                QPixmap(self.image_handler.convert_matrix_to_qimage(self.image_handler.modified_image)))
-
-    def update_noise(self, value: float):
-        if self.image_handler.modified_image is not None:
-            self.modifications_provider.add_change({'name': 'noise', 'value': float(value)})
-            self.modifications_provider.apply_changes()
-            self.MeasuredImage.setPixmap(
-                QPixmap(self.image_handler.convert_matrix_to_qimage(self.image_handler.modified_image)))
 
 
 if __name__ == "__main__":
