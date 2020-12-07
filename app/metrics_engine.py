@@ -48,3 +48,7 @@ class MetricsEngine():
 					break
 
 			self.metrics_list.append(Metric(name, function))
+
+	def calculate_metrics(reference_image, modified_image):
+		results = {metric.name: metric.compute(img_1, img_2) for metric in engine.metrics_list}
+		return results
