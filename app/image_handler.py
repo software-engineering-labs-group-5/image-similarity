@@ -23,7 +23,7 @@ class ImageHandler:
         # Remove alpha channel if exists
         if image_array.shape[2] > 3:
             image_array = np.delete(image_array, 3, 2)
-        self.reference_image = np.asarray(image_array, dtype=int)
+        self.reference_image = np.asarray(image_array, dtype=np.uint16)
         self.modified_image = copy.deepcopy(self.reference_image)
 
     def apply_modification(self, function) -> None:
