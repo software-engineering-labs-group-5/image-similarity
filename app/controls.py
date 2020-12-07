@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5 import QtWidgets
 
+
 class Controls:
     def __init__(self):
         self.brightness_name = "Brightness"
@@ -18,12 +19,21 @@ class Controls:
         self.cur_brightness_value = self.brightness_init
         self.cur_contrast_value = self.contrast_init
         self.cur_noise_value = self.noise_init
+        self.image_handler = None
+        self.view = None
+        self.modifications_provider = None
 
     def subscribe_view(self, view) -> None:
         self.view = view
-    def subscribe_image_handler(self, image_handler):
+        if self.image_handler is not None:
+            self.view.CalculateMetricsButton.cliecked.connect(self.image_handler.trigger_metrics_calculation)
+
+    def subscribe_image_handler(self, image_handler) -> None:
         self.image_handler = image_handler
-    def subscribe_modifications_provider(self, modifications_provider):
+        if self.view is not None:
+            self.view.CalculateMetricsButton.clicked.connect(self.image_handler.trigger_metrics_calculation)
+
+    def subscribe_modifications_provider(self, modifications_provider) -> None:
         self.modifications_provider = modifications_provider
 
     def update_brightness(self, value: float):
@@ -63,4 +73,5 @@ class Controls:
             self.view.NoiseSlider.setSliderPosition(self.noise_init)
             self.modifications_provider.reset_changes()
             self.image_handler.load_image_from_file(path_to_image)
-            self.image_handler.regenerate_view()             
+            self.image_handler.regenerate_view()
+            self.view.CalculateMetricsButton.setEnabled(True)

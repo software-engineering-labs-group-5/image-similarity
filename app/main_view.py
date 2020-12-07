@@ -38,25 +38,15 @@ class Ui_MainWindow(object):
         self.MetricsTable.setGeometry(QtCore.QRect(572, 160, 256, 211))
         self.MetricsTable.setObjectName("MetricsTable")
 
-        self.RMSELabel = QtWidgets.QLabel(self.centralwidget)
-        self.RMSELabel.setGeometry(QtCore.QRect(590, 180, 211, 20))
-        self.RMSELabel.setObjectName("RMSELabel")
-
-        self.PSNRLabel = QtWidgets.QLabel(self.centralwidget)
-        self.PSNRLabel.setGeometry(QtCore.QRect(590, 230, 211, 20))
-        self.PSNRLabel.setObjectName("PSNRLabel")
-
-        self.SSIMLabel = QtWidgets.QLabel(self.centralwidget)
-        self.SSIMLabel.setGeometry(QtCore.QRect(590, 280, 211, 20))
-        self.SSIMLabel.setObjectName("SSIMLabel")
-
-        self.FSIMLabel = QtWidgets.QLabel(self.centralwidget)
-        self.FSIMLabel.setGeometry(QtCore.QRect(590, 330, 211, 20))
-        self.FSIMLabel.setObjectName("FSIMLabel")
+        self.MetricsLabel = QtWidgets.QLabel(self.MetricsTable)
+        self.MetricsLabel.setGeometry(QtCore.QRect(0, 0, 256, 211))
+        self.MetricsLabel.setObjectName("MetricsLabel")
+        self.MetricsLabel.setAlignment(QtCore.Qt.AlignCenter)
 
         self.CalculateMetricsButton = QtWidgets.QPushButton(self.centralwidget)
         self.CalculateMetricsButton.setGeometry(QtCore.QRect(640, 410, 120, 23))
         self.CalculateMetricsButton.setObjectName("CalculateMetricsButton")
+        self.CalculateMetricsButton.setEnabled(False)
 
         self.BrightnessSlider = QtWidgets.QSlider(self.centralwidget)
         self.BrightnessSlider.setGeometry(QtCore.QRect(100, 580, 1200, 25))
@@ -133,10 +123,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Image Similarity"))
-        self.RMSELabel.setText(_translate("MainWindow", "RMSE: "))
-        self.PSNRLabel.setText(_translate("MainWindow", "PSNR: "))
-        self.SSIMLabel.setText(_translate("MainWindow", "SSIM: "))
-        self.FSIMLabel.setText(_translate("MainWindow", "FSIM: "))
+        self.MetricsLabel.setText(_translate("MainWindow", "Upload image to display metrics"))
         self.CalculateMetricsButton.setText(_translate("MainWindow", "Calculate metrics"))
         self.BrightnessLabel.setText(_translate("MainWindow", self.controls.brightness_name))
         self.NoiseLabel.setText(_translate("MainWindow", self.controls.noise_name))
@@ -148,6 +135,12 @@ class Ui_MainWindow(object):
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionExit.setStatusTip(_translate("MainWindow", "Exit from the program"))
         self.actionExit.setShortcut(_translate("MainWindow", "Ctrl+W"))
+
+    def display_metrics(self, metrics: dict):
+        metrics_string = ""
+        for metric in metrics:
+            metrics_string += f"{metric['name']}: {str(round(metric['value'],2))}\n"
+        self.MetricsLabel.setText(metrics_string)
 
     def closeProgram(self):
         app.quit()
