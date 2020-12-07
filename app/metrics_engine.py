@@ -12,28 +12,30 @@ class MetricsEngine():
 
 	def load_metrics(self, path):
 		try:
-			plugins = os.listdir(path)
+			plugins_list = os.listdir(path)
 		except:
 			try:
 				path = path[1:]
-				plugins = os.listdir(path)
+				plugins_list = os.listdir(path)
 			except:
 				try:
 					path = path[2:]
-					plugins = os.listdir(path)
+					plugins_list = os.listdir(path)
 				except:
 					raise Exception("No plugins folder found!")
 		
+		plugins = []
+		for plugin in plugins_list:
+			if '_metric.py' in plugin:
+				if not os.path.isdir(plugin):
+					plugins.append(plugin)
 		
-		for plugin in plugins:
-			if '_metric.py' not in plugin:
-				plugins.remove(plugin)
 		if not len(plugins) > 0:
 			raise Exception("No plugin in plugins folder found!") 
-			
 
 		for plugin in plugins:
 			module_str = f"{path.replace('/', '')}"
+			module_str = f"{module_str.replace('.', '')}"
 			spec = importlib.util.spec_from_file_location(module_str, f"{path}/{plugin}")
 			module = importlib.util.module_from_spec(spec)
 			spec.loader.exec_module(module)
