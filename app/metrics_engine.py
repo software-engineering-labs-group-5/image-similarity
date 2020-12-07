@@ -41,6 +41,10 @@ class MetricsEngine():
 			spec.loader.exec_module(module)
 
 			functions = inspect.getmembers(module, inspect.isfunction)
-			name, function = functions[0]
+
+			for func in functions:
+				name, function = func
+				if '_metric' in name:
+					break
 
 			self.metrics_list.append(Metric(name, function))
