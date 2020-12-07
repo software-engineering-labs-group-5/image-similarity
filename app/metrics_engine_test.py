@@ -5,13 +5,13 @@ from metrics_engine import MetricsEngine
 def test_load_metrics():
 	# given
 	engine = MetricsEngine()
-	expected_metrics_names = sorted(['psnr_metric', 'rmse_metric', 'fsim_metric'])
+	expected_metrics_names = sorted(['cpsnr_metric', 'psnr_metric', 'rmse_metric', 'fsim_metric', 'ssim_metric'])
 
 	# when
 	engine.load_metrics('../plugins')
 
 	# then
-	assert len(engine.metrics_list) == 3
+	assert len(engine.metrics_list) == 5
 	metrics_names = sorted([metric.name for metric in engine.metrics_list])
 	print(metrics_names)
 	assert metrics_names == expected_metrics_names
@@ -20,16 +20,22 @@ def test_load_metrics():
 
 def test_metric_compute():
 	# given
-	img_1 = np.zeros((3,3,3))
-	img_2 = np.ones((3,3,3))
-	
+	# img_1 = np.zeros((300,300,3))
+	# img_2 = np.ones((300,300,3))
+
+	img_1 = np.random.random_sample((300,300,3))
+
+	img_2 = img_1 * 128
+
+
 	engine = MetricsEngine()
 	engine.load_metrics('../plugins')
 
 	expected_results = {
 		'fsim_metric': np.float64('nan'),
 		'psnr_metric': 72.24507812192874,
-		'rmse_metric': 0.0002442002442002442
+		'rmse_metric': 0.0002442002442002442,
+		'ssim_metric': 0.9994040178139078
 	}
 
 	# when
@@ -39,8 +45,7 @@ def test_metric_compute():
 	print(type(results['fsim_metric']))
 	print(type(expected_results['fsim_metric']))
 	# then
-	if results['fsim_metric'] == expected_results['fsim_metric']:
-		print("dasfdagfsfdasdasdawf")
+
 	assert results == expected_results
 	print(f"test_metric_compute: pass")
 
