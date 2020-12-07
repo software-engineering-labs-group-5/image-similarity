@@ -10,7 +10,9 @@ class MetricsEngine():
 		self.metrics_list = []
 		pass
 
-	def load_metrics(self, path):
+    	def load_metrics(self, path=""):
+		if path == "":
+			path = os.path.join(os.path.dirname(os.getcwd()), "plugins")
 		try:
 			plugins_list = os.listdir(path)
 		except:
