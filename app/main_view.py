@@ -11,10 +11,10 @@ class Ui_MainWindow(object):
         self.controls = controls
 
     def display_ref_image(self, image: QImage):
-        self.InputImage.setPixmap(QtGui.QPixmap(image))
+        self.InputImage.setPixmap(QtGui.QPixmap(image).scaled(512, 512, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation))
 
     def display_mod_image(self, image: QImage):
-        self.MeasuredImage.setPixmap(QtGui.QPixmap(image))
+        self.MeasuredImage.setPixmap(QtGui.QPixmap(image).scaled(512, 512, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation))
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
