@@ -51,6 +51,7 @@ class Controls:
             self.modifications_provider.add_change({'name': 'brightness', 'value': float(value)})
             self.modifications_provider.apply_changes()
             self.cur_brightness_value = float(value)
+            self.view.update_brightness_label(self.cur_brightness_value)
             self.view.display_mod_image(self.image_handler.convert_matrix_to_qimage(self.image_handler.modified_image))
             if self.metrics_calculation_enabled:
                 self.image_handler.trigger_metrics_calculation()
@@ -60,6 +61,7 @@ class Controls:
             self.modifications_provider.add_change({'name': 'contrast', 'value': float(value)})
             self.modifications_provider.apply_changes()
             self.cur_contrast_value = float(value)
+            self.view.update_contrast_label(self.cur_contrast_value)
             self.view.display_mod_image(self.image_handler.convert_matrix_to_qimage(self.image_handler.modified_image))
             if self.metrics_calculation_enabled:
                 self.image_handler.trigger_metrics_calculation()
@@ -69,6 +71,7 @@ class Controls:
             self.modifications_provider.add_change({'name': 'noise', 'value': float(value)})
             self.modifications_provider.apply_changes()
             self.cur_noise_value = float(value)
+            self.view.update_noise_label(self.cur_noise_value)
             self.view.display_mod_image(self.image_handler.convert_matrix_to_qimage(self.image_handler.modified_image))
             if self.metrics_calculation_enabled:
                 self.image_handler.trigger_metrics_calculation()
