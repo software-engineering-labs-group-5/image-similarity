@@ -1,7 +1,7 @@
 from skimage.metrics import structural_similarity
 import numpy as np
 
-def ssim_metric(org_img: np.ndarray, pred_img: np.ndarray, max_p=4095) -> float:
+def ssim_metric(org_img: np.ndarray, pred_img: np.ndarray) -> float:
 	"""
 	Structural SIMularity index
 	"""
@@ -11,5 +11,6 @@ def ssim_metric(org_img: np.ndarray, pred_img: np.ndarray, max_p=4095) -> float:
 		multichannel = True
 	else:
 		multichannel = False
-		
-	return structural_similarity(org_img, pred_img, data_range=max_p, multichannel=multichannel)
+	org_img = org_img.astype(np.uint8)
+	pred_img = pred_img.astype(np.uint8)
+	return structural_similarity(org_img, pred_img, multichannel=multichannel)

@@ -1,6 +1,6 @@
 import numpy as np
 
-def psnr_metric(org_img: np.ndarray, pred_img: np.ndarray, max_p=4095) -> float:
+def psnr_metric(org_img: np.ndarray, pred_img: np.ndarray, max_p=256) -> float:
     """
     Peek Signal to Noise Ratio, implemented as mean squared error converted to dB.
     It can be calculated as
@@ -10,7 +10,10 @@ def psnr_metric(org_img: np.ndarray, pred_img: np.ndarray, max_p=4095) -> float:
     """
     #_assert_image_shapes_equal(org_img, pred_img, "PSNR")
 
-    org_img = org_img.astype(np.float32)
+    #org_img = org_img.astype(np.float32)
+
+    # org_img = org_img.astype(np.uint8)
+    # pred_img = pred_img.astype(np.uint8)
 
     mse_bands = []
     for i in range(org_img.shape[2]):
