@@ -19,13 +19,9 @@ class ImageHandler:
 
 	def load_image_from_file(self, image_path: str) -> None:
 		loaded_image = Image.open(image_path)
-		print(type(loaded_image))
 		image_array = np.asarray(loaded_image)
-		print(type(image_array))
-		print(image_array.shape)
 		if len(image_array.shape) < 3:
 			image_array = np.expand_dims(image_array, axis=3)
-		print(image_array.shape)
 		# Remove alpha channel if exists
 		if image_array.shape[2] > 3:
 			image_array = np.delete(image_array, 3, 2)
@@ -53,11 +49,8 @@ class ImageHandler:
 
 	def convert_matrix_to_qimage(self, matrix: np.asarray):
 		out = matrix.astype(dtype=np.uint8)
-		print(type(matrix))
-		print("SHAPPIO = ", out.shape[2])
 		if out.shape[2] == 1:
 			return QImage(out.data, out.shape[1], out.shape[0],QImage.Format_Grayscale8)
-		print("Displaying full colour image!")
 		return QImage(out.data, out.shape[1], out.shape[0], out.strides[0], QImage.Format_RGB888)
 
 
