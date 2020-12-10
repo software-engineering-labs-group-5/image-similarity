@@ -92,7 +92,7 @@ class MainView(QtWidgets.QMainWindow):
         font.setPointSize(10)
         self.brightness_label = QtWidgets.QLabel(self.central_widget)
         self.brightness_label.setEnabled(True)
-        self.brightness_label.setGeometry(QtCore.QRect(100, 550, 111, 21))
+        self.brightness_label.setGeometry(QtCore.QRect(100, 550, 140, 21))
         self.brightness_label.setFont(font)
 
         self.noise_label = QtWidgets.QLabel(self.central_widget)
@@ -102,7 +102,7 @@ class MainView(QtWidgets.QMainWindow):
 
         self.contrast_label = QtWidgets.QLabel(self.central_widget)
         self.contrast_label.setEnabled(True)
-        self.contrast_label.setGeometry(QtCore.QRect(100, 690, 111, 21))
+        self.contrast_label.setGeometry(QtCore.QRect(100, 690, 140, 21))
         self.contrast_label.setFont(font)
 
         # Menu
@@ -137,21 +137,21 @@ class MainView(QtWidgets.QMainWindow):
         self.brightness_slider.valueChanged.connect(self.controls.update_brightness)
         self.brightness_slider.sliderPressed.connect(self.controls.update_brightness_changing_status)
         self.brightness_slider.sliderReleased.connect(self.controls.update_brightness_changing_status)
-        self.brightness_label.setText(self.controls.brightness_name)
+        self.update_brightness_label(self.brightness_slider.value())
 
         self.noise_slider.setMinimum(self.controls.noise_min)
         self.noise_slider.setMaximum(self.controls.noise_max)
         self.noise_slider.valueChanged.connect(self.controls.update_noise)
         self.noise_slider.sliderPressed.connect(self.controls.update_noise_changing_status)
         self.noise_slider.sliderReleased.connect(self.controls.update_noise_changing_status)
-        self.noise_label.setText(self.controls.noise_name)
+        self.update_noise_label(self.noise_slider.value())
 
         self.contrast_slider.setMinimum(self.controls.contrast_min)
         self.contrast_slider.setMaximum(self.controls.contrast_max)
         self.contrast_slider.valueChanged.connect(self.controls.update_contrast)
         self.contrast_slider.sliderPressed.connect(self.controls.update_contrast_changing_status)
         self.contrast_slider.sliderReleased.connect(self.controls.update_contrast_changing_status)
-        self.contrast_label.setText(self.controls.contrast_name)
+        self.update_contrast_label(self.contrast_slider.value())
 
     def display_metrics(self, metrics: dict) -> None:
         metrics_string = ""
@@ -164,6 +164,15 @@ class MainView(QtWidgets.QMainWindow):
         self.brightness_slider.setEnabled(status)
         self.noise_slider.setEnabled(status)
         self.contrast_slider.setEnabled(status)
+
+    def update_brightness_label(self, value: float) -> None:
+        self.brightness_label.setText(self.controls.brightness_name + ": " + str(value))
+
+    def update_noise_label(self, value: float) -> None:
+        self.noise_label.setText(self.controls.noise_name + ": " + str(value))
+
+    def update_contrast_label(self, value: float) -> None:
+        self.contrast_label.setText(self.controls.contrast_name + ": " + str(value))
 
     def close_program(self) -> None:
         self.app.quit()
