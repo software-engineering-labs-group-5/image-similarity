@@ -7,25 +7,23 @@ from main_view import *
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    main_view = MainView(app)
     controls = Controls()
-    ui.subscribe_controls(controls)
-    ui.setupUi(MainWindow)
+    main_view.subscribe_controls(controls)
 
     metrics_engine = MetricsEngine()
-    metrics_engine.subscribe_view(ui)
+    metrics_engine.subscribe_view(main_view)
     metrics_engine.load_metrics()
-    controls.subscribe_view(ui)
+    controls.subscribe_view(main_view)
     image_handler = ImageHandler()
-    image_handler.subscribe_view(ui)
+    image_handler.subscribe_view(main_view)
     modifications_provider = ModificationsProvider()
     modifications_provider.subscribe_image_handler(image_handler)
     controls.subscribe_image_handler(image_handler)
     controls.subscribe_modifications_provider(modifications_provider)
     image_handler.subscribe_metrics_engine(metrics_engine)
 
-    MainWindow.show()
+    main_view.show()
     sys.exit(app.exec_())
 
 
