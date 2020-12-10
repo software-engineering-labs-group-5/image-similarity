@@ -92,7 +92,7 @@ class MainView(QtWidgets.QMainWindow):
         font.setPointSize(10)
         self.brightness_label = QtWidgets.QLabel(self.central_widget)
         self.brightness_label.setEnabled(True)
-        self.brightness_label.setGeometry(QtCore.QRect(100, 550, 111, 21))
+        self.brightness_label.setGeometry(QtCore.QRect(100, 550, 140, 21))
         self.brightness_label.setFont(font)
 
         self.noise_label = QtWidgets.QLabel(self.central_widget)
@@ -102,7 +102,7 @@ class MainView(QtWidgets.QMainWindow):
 
         self.contrast_label = QtWidgets.QLabel(self.central_widget)
         self.contrast_label.setEnabled(True)
-        self.contrast_label.setGeometry(QtCore.QRect(100, 690, 111, 21))
+        self.contrast_label.setGeometry(QtCore.QRect(100, 690, 140, 21))
         self.contrast_label.setFont(font)
 
         # Menu
