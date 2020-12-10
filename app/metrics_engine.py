@@ -1,18 +1,18 @@
 import os
 import importlib
 import inspect
+import numpy as np
 
 from metric import Metric
 
 
-class MetricsEngine():
-
+class MetricsEngine:
     def __init__(self):
         self.metrics_list = []
         self.view = None
         pass
 
-    def load_metrics(self, path=""):
+    def load_metrics(self, path: str = "") -> None:
         if path == "":
             path = os.path.join(os.path.dirname(os.getcwd()), "plugins")
         try:
@@ -53,7 +53,7 @@ class MetricsEngine():
 
             self.metrics_list.append(Metric(name, function))
 
-    def calculate_metrics(self, reference_image, modified_image):
+    def calculate_metrics(self, reference_image: np.asarray, modified_image: np.asarray) -> None:
         if self.view is not None:
             results = []
             for metric in self.metrics_list:
@@ -62,5 +62,5 @@ class MetricsEngine():
         else:
             raise Exception("calculate_metrics", "view is not set")
 
-    def subscribe_view(self, view):
+    def subscribe_view(self, view) -> None:
         self.view = view
