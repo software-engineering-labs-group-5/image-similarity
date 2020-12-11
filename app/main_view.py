@@ -24,8 +24,12 @@ class MainView(QtWidgets.QMainWindow):
         self.contrast_label = None
 
         self.menu_file = None
-        self.action_open_image = None
+        self.action_open_ref_image = None
+        self.action_open_mod_image = None
         self.action_exit = None
+
+        self.ref_image_loaded = False
+        self.mod_image_loaded = False
 
         self.setup_ui()
 
@@ -120,17 +124,24 @@ class MainView(QtWidgets.QMainWindow):
         self.action_exit.setStatusTip("Exit from the program")
         self.action_exit.setShortcut("Ctrl+W")
 
-        self.action_open_image = QtWidgets.QAction(self)
-        self.action_open_image.setText("Open image")
-        self.action_open_image.setStatusTip("Open an image from your computer")
-        self.action_open_image.setShortcut("Ctrl+O")
+        self.action_open_ref_image = QtWidgets.QAction(self)
+        self.action_open_ref_image.setText("Open reference image")
+        self.action_open_ref_image.setStatusTip("Open an image from your computer")
+        self.action_open_ref_image.setShortcut("Ctrl+I")
 
-        self.menu_file.addAction(self.action_open_image)
+        self.action_open_mod_image = QtWidgets.QAction(self)
+        self.action_open_mod_image.setText("Open modified image")
+        self.action_open_mod_image.setStatusTip("Open an image from your computer")
+        self.action_open_mod_image.setShortcut("Ctrl+O")
+
+        self.menu_file.addAction(self.action_open_ref_image)
+        self.menu_file.addAction(self.action_open_mod_image)
         self.menu_file.addSeparator()
         self.menu_file.addAction(self.action_exit)
 
     def setup_controls(self) -> None:
-        self.action_open_image.triggered.connect(self.controls.load_image)
+        self.action_open_ref_image.triggered.connect(self.controls.load_ref_image)
+        self.action_open_mod_image.triggered.connect(self.controls.load_mod_image)
 
         self.brightness_slider.setMinimum(self.controls.brightness_min)
         self.brightness_slider.setMaximum(self.controls.brightness_max)
