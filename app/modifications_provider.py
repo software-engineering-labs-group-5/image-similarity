@@ -11,13 +11,13 @@ class ModificationsProvider:
         self.change_to_undo = False
 
     def add_change(self, change: dict) -> None:
-        if self.change_to_undo:
-            self.change_to_undo = False
-            return
         try:
             if change['name'] in self.modifications and type(change['value']) is float:
                 self.modifications[change['name']] = change['value']
-                self.changes_list.append(change)
+                if self.change_to_undo:
+                    self.change_to_undo = False
+                else:
+                    self.changes_list.append(change)
             else:
                 raise KeyError
         except (AttributeError, KeyError):

@@ -47,6 +47,8 @@ class Controls:
         self.modifications_provider = modifications_provider
 
     def update_brightness(self, value: float) -> None:
+        if value == self.cur_brightness_value:
+            return
         self.view.update_brightness_label(value)
         if self.image_handler.modified_image is not None and self.brightness_is_changing is False:
             self.modifications_provider.add_change({'name': 'brightness', 'value': float(value)})
@@ -57,6 +59,8 @@ class Controls:
                 self.image_handler.trigger_metrics_calculation()
 
     def update_contrast(self, value: float) -> None:
+        if value == self.cur_contrast_value:
+            return
         self.view.update_contrast_label(value)
         if self.image_handler.modified_image is not None and self.contrast_is_changing is False:
             self.modifications_provider.add_change({'name': 'contrast', 'value': float(value)})
@@ -67,6 +71,8 @@ class Controls:
                 self.image_handler.trigger_metrics_calculation()
 
     def update_noise(self, value: float) -> None:
+        if value == self.cur_noise_value:
+            return
         self.view.update_noise_label(value)
         if self.image_handler.modified_image is not None and self.noise_is_changing is False:
             self.modifications_provider.add_change({'name': 'noise', 'value': float(value)})
