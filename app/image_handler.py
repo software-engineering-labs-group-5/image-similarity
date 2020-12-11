@@ -21,7 +21,7 @@ class ImageHandler:
         loaded_image = Image.open(image_path)
         image_array = np.asarray(loaded_image)
         if len(image_array.shape) < 3:
-            image_array = np.expand_dims(image_array, axis=3)
+            image_array = np.expand_dims(image_array, axis=2)
         # Remove alpha channel if exists
         if image_array.shape[2] > 3:
             image_array = np.delete(image_array, 3, 2)
