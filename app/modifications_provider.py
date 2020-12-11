@@ -8,12 +8,16 @@ class ModificationsProvider:
         self.modifications = {'brightness': 0.0, 'contrast': 0.0, 'noise': 0.0}
         self.noise_matrix = None
         self.noise_level = 0.0
+        self.change_to_undo = False
 
     def add_change(self, change: dict) -> None:
         try:
             if change['name'] in self.modifications and type(change['value']) is float:
                 self.modifications[change['name']] = change['value']
-                self.changes_list.append(change)
+                if self.change_to_undo:
+                    self.change_to_undo = False
+                else:
+                    self.changes_list.append(change)
             else:
                 raise KeyError
         except (AttributeError, KeyError):
@@ -26,19 +30,18 @@ class ModificationsProvider:
         self.noise_level = 0.0
         self.changes_list.clear()
 
-    def undo_change(self) -> None:
+    def undo_change(self) -> dict:
         if len(self.changes_list) == 0:
-            return
+            return {'name': '', 'value': 0.0}
 
+        self.change_to_undo = True
         deleted_change = self.changes_list.pop()
         for change in reversed(self.changes_list):
             if change['name'] == deleted_change['name']:
-                self.modifications[change['name']] = change['value']
-                self.apply_changes()
-                return
+                return change
         # The deleted change was the first one of this kind
-        self.modifications[deleted_change['name']] = 0.0
-        self.apply_changes()
+        deleted_change['value'] = 0.0
+        return deleted_change
 
     def apply_changes(self) -> None:
         if self.image_handler is not None:

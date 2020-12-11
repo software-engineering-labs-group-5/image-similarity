@@ -47,6 +47,8 @@ class Controls:
         self.modifications_provider = modifications_provider
 
     def update_brightness(self, value: float) -> None:
+        if value == self.cur_brightness_value:
+            return
         self.view.update_brightness_label(value)
         if self.image_handler.modified_image is not None and self.brightness_is_changing is False:
             self.modifications_provider.add_change({'name': 'brightness', 'value': float(value)})
@@ -57,6 +59,8 @@ class Controls:
                 self.image_handler.trigger_metrics_calculation()
 
     def update_contrast(self, value: float) -> None:
+        if value == self.cur_contrast_value:
+            return
         self.view.update_contrast_label(value)
         if self.image_handler.modified_image is not None and self.contrast_is_changing is False:
             self.modifications_provider.add_change({'name': 'contrast', 'value': float(value)})
@@ -67,6 +71,8 @@ class Controls:
                 self.image_handler.trigger_metrics_calculation()
 
     def update_noise(self, value: float) -> None:
+        if value == self.cur_noise_value:
+            return
         self.view.update_noise_label(value)
         if self.image_handler.modified_image is not None and self.noise_is_changing is False:
             self.modifications_provider.add_change({'name': 'noise', 'value': float(value)})
@@ -76,7 +82,7 @@ class Controls:
             if self.metrics_calculation_enabled:
                 self.image_handler.trigger_metrics_calculation()
 
-    def load_image(self) -> None:
+    def load_ref_image(self) -> None:
         if self.image_handler is None:
             raise Exception("load_image", "image_handler not set")
         elif self.modifications_provider is None:
@@ -88,9 +94,31 @@ class Controls:
             self.view.brightness_slider.setSliderPosition(self.brightness_init)
             self.view.noise_slider.setSliderPosition(self.noise_init)
             self.modifications_provider.reset_changes()
-            self.image_handler.load_image_from_file(path_to_image)
+            self.image_handler.load_ref_image_from_file(path_to_image)
             self.image_handler.regenerate_view()
-            self.view.set_controls_enabled(True)
+            self.view.ref_image_loaded = True
+            if self.view.ref_image_loaded and self.view.mod_image_loaded:
+                self.view.set_controls_enabled(True)
+                self.image_handler.trigger_metrics_calculation()
+
+    def load_mod_image(self) -> None:
+        if self.image_handler is None:
+            raise Exception("load_image", "image_handler not set")
+        elif self.modifications_provider is None:
+            raise Exception("load_image", "modifications_provider not set")
+        path_to_image, _ = QtWidgets.QFileDialog.getOpenFileName(None, "Choose image", "",
+                                                                 "Image Files (*.png *.jpg *.bmp)")
+        if path_to_image != '':
+            self.view.contrast_slider.setSliderPosition(self.contrast_init)
+            self.view.brightness_slider.setSliderPosition(self.brightness_init)
+            self.view.noise_slider.setSliderPosition(self.noise_init)
+            self.modifications_provider.reset_changes()
+            self.image_handler.load_mod_image_from_file(path_to_image)
+            self.image_handler.regenerate_view()
+            self.view.mod_image_loaded = True
+            if self.view.ref_image_loaded and self.view.mod_image_loaded:
+                self.view.set_controls_enabled(True)
+                self.image_handler.trigger_metrics_calculation()
 
     def update_brightness_changing_status(self):
         self.brightness_is_changing = not self.brightness_is_changing
@@ -113,3 +141,14 @@ class Controls:
             self.view.calculate_metrics_button.setText("Calculate metrics: On")
         else:
             self.view.calculate_metrics_button.setText("Calculate metrics: Off")
+
+    def undo_change(self):
+        change = self.modifications_provider.undo_change()
+        if change['name'] == 'brightness':
+            self.view.brightness_slider.setSliderPosition(change['value'])
+        elif change['name'] == 'noise':
+            self.view.noise_slider.setSliderPosition(change['value'])
+        elif change['name'] == 'contrast':
+            self.view.contrast_slider.setSliderPosition(change['value'])
+        if self.view.ref_image_loaded and self.view.mod_image_loaded and self.metrics_calculation_enabled:
+            self.image_handler.trigger_metrics_calculation()
