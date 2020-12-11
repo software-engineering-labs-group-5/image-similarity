@@ -135,3 +135,14 @@ class Controls:
             self.view.calculate_metrics_button.setText("Calculate metrics: On")
         else:
             self.view.calculate_metrics_button.setText("Calculate metrics: Off")
+
+    def undo_change(self):
+        change = self.modifications_provider.undo_change()
+        if change['name'] == 'brightness':
+            self.view.brightness_slider.setSliderPosition(change['value'])
+        elif change['name'] == 'noise':
+            self.view.noise_slider.setSliderPosition(change['value'])
+        elif change['name'] == 'contrast':
+            self.view.contrast_slider.setSliderPosition(change['value'])
+        if self.view.ref_image_loaded and self.view.mod_image_loaded and self.metrics_calculation_enabled:
+            self.image_handler.trigger_metrics_calculation()

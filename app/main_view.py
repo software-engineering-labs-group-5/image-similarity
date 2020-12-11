@@ -24,9 +24,11 @@ class MainView(QtWidgets.QMainWindow):
         self.contrast_label = None
 
         self.menu_file = None
+        self.menu_edit = None
         self.action_open_ref_image = None
         self.action_open_mod_image = None
         self.action_exit = None
+        self.action_undo = None
 
         self.ref_image_loaded = False
         self.mod_image_loaded = False
@@ -109,7 +111,7 @@ class MainView(QtWidgets.QMainWindow):
         self.contrast_label.setGeometry(QtCore.QRect(100, 690, 140, 21))
         self.contrast_label.setFont(font)
 
-        # Menu
+        # Menu file
         self.menu_bar = QtWidgets.QMenuBar(self)
         self.menu_bar.setGeometry(QtCore.QRect(0, 0, 1400, 21))
         self.setMenuBar(self.menu_bar)
@@ -139,9 +141,21 @@ class MainView(QtWidgets.QMainWindow):
         self.menu_file.addSeparator()
         self.menu_file.addAction(self.action_exit)
 
+        # Menu edit
+        self.menu_edit = QtWidgets.QMenu(self.menu_bar)
+        self.menu_edit.setTitle("Edit")
+        self.menu_bar.addAction(self.menu_edit.menuAction())
+
+        self.action_undo = QtWidgets.QAction(self)
+        self.action_undo.setText("Undo")
+        self.action_undo.setShortcut("Ctrl+Z")
+
+        self.menu_edit.addAction(self.action_undo)
+
     def setup_controls(self) -> None:
         self.action_open_ref_image.triggered.connect(self.controls.load_ref_image)
         self.action_open_mod_image.triggered.connect(self.controls.load_mod_image)
+        self.action_undo.triggered.connect(self.controls.undo_change)
 
         self.brightness_slider.setMinimum(self.controls.brightness_min)
         self.brightness_slider.setMaximum(self.controls.brightness_max)
