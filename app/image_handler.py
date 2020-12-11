@@ -20,10 +20,12 @@ class ImageHandler:
     def load_image_from_file(self, image_path: str) -> None:
         loaded_image = Image.open(image_path)
         image_array = np.asarray(loaded_image)
+        if len(image_array.shape) < 3:
+            image_array = np.expand_dims(image_array, axis=3)
         # Remove alpha channel if exists
         if image_array.shape[2] > 3:
             image_array = np.delete(image_array, 3, 2)
-        self.reference_image = np.asarray(image_array, dtype=np.uint16)
+        self.reference_image = image_array.astype(dtype=np.uint16)
         self.modified_image = copy.deepcopy(self.reference_image)
 
     def apply_modification(self, function) -> None:
@@ -46,10 +48,9 @@ class ImageHandler:
             raise Exception("trigger_metrics_calculation", "metrics_engine is not set")
 
     def convert_matrix_to_qimage(self, matrix: np.asarray):
-        out = np.asarray(matrix, dtype=np.uint8)
+        out = matrix.astype(dtype=np.uint8)
+
+        if out.shape[2] == 1:
+            return QImage(out.data, out.shape[1], out.shape[0], QImage.Format_Grayscale8)
+
         return QImage(out.data, out.shape[1], out.shape[0], out.strides[0], QImage.Format_RGB888)
-
-
-
-
-
