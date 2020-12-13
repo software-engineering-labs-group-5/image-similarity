@@ -3,6 +3,7 @@ from modifications_provider import ModificationsProvider
 from controls import Controls
 from metrics_engine import MetricsEngine
 from main_view import *
+from skimage.metrics import structural_similarity
 
 
 def main():
